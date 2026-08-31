@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /apply.html
 
-Sitemap: https://chaeum.primeadmit.co.kr/sitemap.xml
+Sitemap: https://wawa.primeadmit.co.kr/sitemap.xml
