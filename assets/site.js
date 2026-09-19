@@ -68,4 +68,78 @@
       });
     });
   }
+
+  // ---- center finder (centers.html) ----
+  var centerGrid = document.getElementById("centerGrid");
+  if (centerGrid) {
+    // 실제로 확인된 지점만 등록합니다. 새 지점 정보가 오면 이 배열에 추가하세요.
+    var CENTERS = [
+      {
+        name: "원흥점",
+        region: "경기",
+        city: "경기 고양시 덕양구",
+        address: "경기 고양시 덕양구 권율대로 672 원흥역봄오피스텔 2층 217호",
+        note: "원흥역 1번 출구 앞, 1층 베스킨라빈스 건물 2층",
+        schools: ["원흥초", "삼송초", "고양동산초", "원흥중", "고양중", "고양동산고", "도래울고"],
+        reg: "고양교육지원청 등록 제6096호"
+      },
+      {
+        name: "첨단점",
+        region: "경상·전라",
+        city: "광주광역시 광산구",
+        address: "광주광역시 광산구 첨단지구 일대",
+        note: "상세 위치는 상담 시 안내드립니다",
+        schools: ["월봉중", "봉산중", "첨단중"],
+        reg: "광주서부교육지원청 등록 제7200호"
+      }
+    ];
+
+    var countEl = document.getElementById("centerCount");
+    var emptyEl = document.getElementById("centerEmpty");
+    var searchEl = document.getElementById("centerSearch");
+    var chips = document.querySelectorAll(".finder-chip");
+    var activeRegion = "all";
+
+    function renderCenters(list) {
+      centerGrid.innerHTML = list.map(function (c) {
+        var schoolTags = c.schools.map(function (s) { return "<span>" + s + "</span>"; }).join("");
+        return (
+          '<article class="center-card">' +
+            '<div class="cc-head"><h3>' + c.name + '</h3><span class="cc-city">' + c.city + '</span></div>' +
+            '<p class="cc-addr">' + c.address + (c.note ? " &middot; " + c.note : "") + '</p>' +
+            '<div class="cc-schools">' + schoolTags + '</div>' +
+            '<div class="cc-reg">' + c.reg + '</div>' +
+            '<a href="apply.html" class="btn btn-primary">' + c.name + ' 상담 신청</a>' +
+          '</article>'
+        );
+      }).join("");
+      countEl.textContent = list.length;
+      emptyEl.hidden = list.length > 0;
+      centerGrid.hidden = list.length === 0;
+    }
+
+    function applyFilter() {
+      var q = (searchEl.value || "").trim().toLowerCase();
+      var filtered = CENTERS.filter(function (c) {
+        var regionOk = activeRegion === "all" || c.region === activeRegion;
+        if (!regionOk) return false;
+        if (!q) return true;
+        var hay = (c.name + " " + c.city + " " + c.address + " " + c.schools.join(" ")).toLowerCase();
+        return hay.indexOf(q) !== -1;
+      });
+      renderCenters(filtered);
+    }
+
+    chips.forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        chips.forEach(function (c) { c.classList.remove("active"); });
+        chip.classList.add("active");
+        activeRegion = chip.getAttribute("data-region");
+        applyFilter();
+      });
+    });
+    searchEl.addEventListener("input", applyFilter);
+
+    applyFilter();
+  }
 })();
